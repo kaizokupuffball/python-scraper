@@ -4,24 +4,36 @@ import os
 import requests
 from pathlib import Path
 
+# Inputs cannot be empty
+def getInput(text):
+    x = input(text)
+    if not x:
+        getInput(text)
+    else:
+        return x
+
 # Our base url where files and sub-directories are located
 # Script will download every file with the given extension(s)
 # and if you want it to go through sub-directories it also will
 # do that
-urlInput = input('Enter a URL to scape: ')
+urlInput = getInput('Enter a URL to scape: ')
 
 # Download directory
-dirInput = input('Enter directory name: ')
+dirInput = getInput('Enter directory name: ')
 
 # Our download directory where all the files will be stored 
 # This is basically the script location and the download directory within
 downloadDir = os.getcwd() + '\\' + 'download' + '\\' + dirInput + '\\'
 
-# Extensions and exclude list
-# Extensions are files we want to download
+# Extensions list (the files we want)
+extsInput = getInput('Enter extensions to download (comma separated or *): ')
+exts = extsInput.split(',')
+exts = [item.strip() for item in exts]
+
 # Exclude's are link text's we want to ignore
-exts = ['.mod', '.it', '.xm']
-excludes = ['parent directory', '..', '.', 'MODLAND']
+excludesInput = getInput('Enter excludes list (comma separated): ')
+excludes = excludesInput.split(',')
+excludes = [item.strip() for item in excludes]
 
 # Dowload given URL
 # to given destination directory
@@ -47,19 +59,15 @@ def run(url, dest):
         # Grab the file extension from the URL
         hrefExt = os.path.splitext(href)[1]
 
-        # Check that the file in this iteration is
-        # in the extensions list
-        # Do some excludes
+        # Exclude?
         if text.lower() in excludes:
             continue
-        elif hrefExt in exts:
-            downloadFile(url+href, dest+text)
-            #file = requests.get(url + href)
-            #open(dest + text, 'wb').write(file.content)
-            #print('Downloaded: ' + url+text)
 
-        elif (href.endswith('/')):
+        # Download or iterate to next directory
+        if (href.endswith('/')):
             run(url + href, dest + text + '\\')
+        elif hrefExt in exts or '*' in exts:
+            downloadFile(url+href, dest+text)
 
 # Download file function
 def downloadFile(url, dest):
@@ -68,4 +76,3 @@ def downloadFile(url, dest):
     print('Downloaded: ' + url)
 
 run(urlInput, downloadDir)
-
