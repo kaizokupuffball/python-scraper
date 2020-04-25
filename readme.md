@@ -1,6 +1,7 @@
 # Python Scraper
 
 This is a very simple scraper for directory listed websites.
+It is not multithreaded or whatever to do multiple parallell file downloads. It takes one file at a time, but I'm open for pull requests if anyone know's how to do that. :)
 
 When i say directory listed websites i mean theese kind of websites.
 
